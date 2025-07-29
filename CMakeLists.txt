@@ -28,14 +28,24 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
+set(FREERTOS_KERNEL_PATH "E:/Documentos/EMBARCATECH/fase2/FreeRTOS-Kernel")
+include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_import.cmake)
+
 project(datalogger_IMU C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
+# Bibliotecas externas
+add_subdirectory(lib/ssd1306)
+add_subdirectory(lib/FatFs_SPI)  
+
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(datalogger_IMU datalogger_IMU.c )
+add_executable(datalogger_IMU 
+    datalogger_IMU.c 
+    hw_config.c
+    )
 
 pico_set_program_name(datalogger_IMU "datalogger_IMU")
 pico_set_program_version(datalogger_IMU "0.1")
@@ -44,18 +54,21 @@ pico_set_program_version(datalogger_IMU "0.1")
 pico_enable_stdio_uart(datalogger_IMU 0)
 pico_enable_stdio_usb(datalogger_IMU 1)
 
-# Add the standard library to the build
-target_link_libraries(datalogger_IMU
-        pico_stdlib)
-
 # Add the standard include files to the build
 target_include_directories(datalogger_IMU PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/lib
 )
 
 # Add any user requested libraries
 target_link_libraries(datalogger_IMU 
-        
+        pico_stdlib
+        FatFs_SPI
+        hardware_clocks
+        hardware_adc
+        FreeRTOS-Kernel 
+        FreeRTOS-Kernel-Heap4
+        ssd1306
         )
 
 pico_add_extra_outputs(datalogger_IMU)
