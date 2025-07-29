@@ -1,41 +1,51 @@
 #ifndef CONFIG_BTN_H
 #define CONFIG_BTN_H
 
-// Trecho para modo BOOTSEL com botão B
-#include "pico/bootrom.h"
-#define BOTAO_A 5
-#define botaoB 6
+#include "pico/stdlib.h"
+#include "hardware/gpio.h"
+#include "hardware/timer.h"
 
-// --- Controle de estado e debounce ---
-volatile bool buzzer_silenciado = true;
-absolute_time_t ultimo_clique = 0;
+// Pinos dos botões
+#define BTN_A 5  // Botão A → Iniciar/parar gravação
+#define BTN_B 6  // Botão B → Montar/desmontar SD
 
-// --- Handler único de interrupções dos botões ---
+// Flags globais (usadas pelas tasks)
+volatile bool flag_toggle_gravacao = false;
+volatile bool flag_montar_sd = false;
+
+// Debounce
+static volatile uint32_t last_time_us = 0;
+#define DEBOUNCE_US 300000  // 300ms
+
+// Função de interrupção única para ambos os botões
 void gpio_irq_handler(uint gpio, uint32_t events) {
-    if (gpio == BOTAO_A) {
-        if (absolute_time_diff_us(ultimo_clique, get_absolute_time()) > 300000) {
-            buzzer_silenciado = true;
-            ultimo_clique = get_absolute_time();
-            printf("Botão A pressionado: buzzer silenciado\n");
-        }
-    } else if (gpio == botaoB) {
-        reset_usb_boot(0, 0);
+    uint32_t now = to_us_since_boot(get_absolute_time());
+    if (now - last_time_us < DEBOUNCE_US) return;
+    last_time_us = now;
+
+    if (gpio == BTN_A) {
+        flag_toggle_gravacao = true;
+        printf("[IRQ] Botão A pressionado\n");
+    } else if (gpio == BTN_B) {
+        flag_montar_sd = true;
+        printf("[IRQ] Botão B pressionado\n");
     }
 }
 
-void init_btn_callback(){
-    // Botão A
-    gpio_init(BOTAO_A);
-    gpio_set_dir(BOTAO_A, GPIO_IN);
-    gpio_pull_up(BOTAO_A);
-    gpio_set_irq_enabled_with_callback(BOTAO_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
+// Inicialização dos botões e interrupções
+void init_botoes() {
+    gpio_init(BTN_A);
+    gpio_set_dir(BTN_A, GPIO_IN);
+    gpio_pull_up(BTN_A);
 
-    // Para ser utilizado o modo BOOTSEL com botão B
-    gpio_init(botaoB);
-    gpio_set_dir(botaoB, GPIO_IN);
-    gpio_pull_up(botaoB);
-    gpio_set_irq_enabled_with_callback(botaoB, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
-    // Fim do trecho para modo BOOTSEL com botão B
+    gpio_init(BTN_B);
+    gpio_set_dir(BTN_B, GPIO_IN);
+    gpio_pull_up(BTN_B);
+
+    // Registra o callback apenas uma vez (para ambos)
+    gpio_set_irq_enabled_with_callback(BTN_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
+    gpio_set_irq_enabled(BTN_B, GPIO_IRQ_EDGE_FALL, true);
+
 }
 
 #endif
