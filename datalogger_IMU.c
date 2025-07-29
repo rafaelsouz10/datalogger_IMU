@@ -19,6 +19,7 @@ volatile uint32_t numero_amostra = 0;
 #include "lib/task_logger.h"
 #include "lib/config_btn.h"
 #include "lib/task_display.h"
+#include "lib/task_alarme.h"
 
 int main() {
     stdio_init_all();
@@ -29,12 +30,12 @@ int main() {
     // Inicializa o sensor IMU
     initMPU();
 
-
     estado_atual = ESTADO_INICIALIZANDO;
 
     xTaskCreate(vTaskControle, "Controle", 1024, NULL, 2, NULL);
     xTaskCreate(vTaskLogger, "Logger", 1024, NULL, 2, NULL);
     xTaskCreate(vTaskDisplay, "Display", 1024, NULL, 1, NULL);
+    xTaskCreate(vTaskAlarme, "Alarme", 512, NULL, 1, NULL);
 
     // Inicia o agendador do FreeRTOS
     vTaskStartScheduler();

@@ -43,7 +43,7 @@ void vTaskDisplay(void *pvParameters) {
             break;
             case ESTADO_PRONTO:
                 ssd1306_draw_string(&ssd, "SD montado", 20, 15);
-                ssd1306_draw_string(&ssd, "Para gravar", 0, 30);
+                ssd1306_draw_string(&ssd, "Para gravar", 15, 30);
                 ssd1306_draw_string(&ssd, "Pressione A", 20, 45);
             break;
             case ESTADO_GRAVANDO:

@@ -7,7 +7,7 @@
 #include "sd_logger.h"
 
 // Define o intervalo de coleta em milissegundos
-#define INTERVALO_LOG_MS 100
+#define INTERVALO_LOG_MS 500
 
 void vTaskLogger(void *params) {
     const TickType_t xDelay = pdMS_TO_TICKS(INTERVALO_LOG_MS);
