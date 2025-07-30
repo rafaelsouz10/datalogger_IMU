@@ -126,13 +126,13 @@ O sistema realiza a captura de dados da IMU (aceleração e giroscópio) e salva
 
 ### 🔄 Estados e Comportamentos
 
-| **Estado**         | **Descrição**                                  | **Indicação Visual/Sonora**                         |
-|--------------------|-----------------------------------------------|-----------------------------------------------------|
-| **Inicializando**  | Sistema ligado, aguardando montagem do SD     | 🔴 Ambos os LEDs desligados                         |
-| **Pronto**         | SD montado, pronto para iniciar gravação      | 🟢 LED Verde aceso                                  |
-| **Gravando**       | Dados sendo capturados e salvos               | 🔴 LED Vermelho aceso + 1 beep curto (início)       |
-| **Pausa**          | Gravação encerrada, aguardando nova ação      | 🟢 LED Verde aceso + 2 beeps curtos (parada)        |
-| **Erro SD**        | Falha na montagem ou na gravação do cartão    | 🔴 LED Vermelho piscando + buzzer contínuo          |
+| **Estado**         | **Descrição**                                 |
+|--------------------|-----------------------------------------------|
+| **Inicializando**  | Sistema ligado, aguardando montagem do SD     |
+| **Pronto**         | SD montado, pronto para iniciar gravação      |
+| **Gravando**       | Dados sendo capturados e salvos               |
+| **Pausa**          | Gravação encerrada, aguardando nova ação      |
+| **Erro SD**        | Falha na montagem ou na gravação do cartão    |
 
 ### 🔘 Botões
 
